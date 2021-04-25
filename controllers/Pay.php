@@ -9,8 +9,10 @@
  * to authenticate call the following endpoint
  * Endpoint: /hmapi/auth/start/<user>/<pass>
  */
+
+
 class Pay extends Base_Controller
-{
+{    
     private string $endpoint_secret = "YOUR WEBHOOK SECRET";
     private string $stripe_api_key = "YOUR STRIPE API KEY";
     
@@ -28,25 +30,28 @@ class Pay extends Base_Controller
         }
 
         $YOUR_DOMAIN = getenv('IP_URL');
-        $checkout_session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card'],
-        'line_items' => [[
-            'price_data' => [
-            'currency' => 'chf',
-            'unit_amount' => $invoice_information['invoice']->invoice_balance*100,
-            'product_data' => [
-                'name' => 'Invoice '.$invoice_information['invoice']->invoice_number,
-            ],
-            ],
-            'quantity' => 1,
-        ]],
-        'mode' => 'payment',
-        'client_reference_id'=>$invoice_id,
-        'customer_email' => $invoice_information['invoice']->client_email,
-        'locale'=>'auto',
-        'success_url' => $YOUR_DOMAIN . '/hmapi/pay/success/'.$invoice_id,
-        'cancel_url' => $YOUR_DOMAIN . '/hmapi/pay/cancel/'.$invoice_id,
-        ]);
+        $session_create_data = [
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                'currency' => 'chf',
+                'unit_amount' => $invoice_information['invoice']->invoice_balance*100,
+                'product_data' => [
+                    'name' => 'Invoice '.$invoice_information['invoice']->invoice_number,
+                ],
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'client_reference_id'=>$invoice_id,
+            'locale'=>'auto',
+            'success_url' => $YOUR_DOMAIN . '/hmapi/pay/success/'.$invoice_id,
+            'cancel_url' => $YOUR_DOMAIN . '/hmapi/pay/cancel/'.$invoice_id,
+            ];
+        if(!empty($invoice_information['invoice']->client_email))
+            $session_create_data['customer_email'] = $invoice_information['invoice']->client_email;
+
+        $checkout_session = \Stripe\Checkout\Session::create($session_create_data);
         $checkout_session->id;
         // print_r($invoice_information);
         // exit;
