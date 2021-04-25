@@ -11,10 +11,13 @@
  */
 class Pay extends Base_Controller
 {
+    private string $endpoint_secret = "YOUR WEBHOOK SECRET";
+    private string $stripe_api_key = "YOUR STRIPE API KEY";
+    
     function stripe($invoice_id)
     {
         require_once(APPPATH.'modules/hmapi/library/Stripe/init.php');
-        \Stripe\Stripe::setApiKey('sk_test_pgnDytNJxDetlHBocfhRd0od');
+        \Stripe\Stripe::setApiKey($this->stripe_api_key);
         //header('Content-Type: application/json');
 
         $invoice_information = $this->_payment_information($invoice_id);
@@ -99,9 +102,7 @@ class Pay extends Base_Controller
     {
         require_once(APPPATH.'modules/hmapi/library/Stripe/init.php');
 
-        \Stripe\Stripe::setApiKey('sk_test_pgnDytNJxDetlHBocfhRd0od');
-        // You can find your endpoint's secret in your webhook settings
-        $endpoint_secret = 'whsec_WIZZxzsREMI02ByeaWxjLTf3I9yJWGs1';
+        \Stripe\Stripe::setApiKey($this->stripe_api_key);
 
         $payload = @file_get_contents('php://input');
         $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
@@ -109,7 +110,7 @@ class Pay extends Base_Controller
 
         try {
         $event = \Stripe\Webhook::constructEvent(
-            $payload, $sig_header, $endpoint_secret
+            $payload, $sig_header, $this->endpoint_secret
         );
         } catch(\UnexpectedValueException $e) {
         // Invalid payload
