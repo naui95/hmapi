@@ -15,6 +15,7 @@ class Pay extends Base_Controller
 {    
     private string $endpoint_secret = "YOUR WEBHOOK SECRET";
     private string $stripe_api_key = "YOUR STRIPE API KEY";
+    private string $stripe_pk_key = "YOUR STRIPE PUBLISHABLE KEY";
     
     function stripe($invoice_id)
     {
@@ -55,7 +56,7 @@ class Pay extends Base_Controller
         $checkout_session->id;
         // print_r($invoice_information);
         // exit;
-        $this->load->view('hmapi/stripe_checkout',['stripe_session_id'=>$checkout_session->id]);
+        $this->load->view('hmapi/stripe_checkout',['stripe_session_id'=>$checkout_session->id,'pk_key'=>$this->stripe_pk_key]);
         //echo json_encode(['id' => $checkout_session->id]);
     }
 

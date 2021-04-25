@@ -7,7 +7,7 @@
     <body>
     <script type="text/javascript">
         // Create an instance of the Stripe object with your publishable API key
-        var stripe = Stripe("pk_test_ruttiYWbopHL0a3ttNAf0aUf");
+        var stripe = Stripe("<?php echo $pk_key;?>");
 
         stripe.redirectToCheckout({ sessionId: '<?php echo $stripe_session_id;?>' })
         .then(function (result) {
