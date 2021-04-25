@@ -19,6 +19,11 @@ class Pay extends Base_Controller
 
         $invoice_information = $this->_payment_information($invoice_id);
 
+        if($invoice_information['disable_form'])
+        {
+            redirect('guest/view/invoice/' . $invoice_id);
+        }
+
         $YOUR_DOMAIN = getenv('IP_URL');
         $checkout_session = \Stripe\Checkout\Session::create([
         'payment_method_types' => ['card'],
@@ -119,9 +124,8 @@ class Pay extends Base_Controller
         // Handle the checkout.session.completed event
         if ($event->type == 'checkout.session.completed') {
         $session = $event->data->object;
-
-        // Fulfill the purchase...
-        log_message('debug',print_r($session));
+        //register payment in InvoicePlane
+        $this->_set_paid_invoice($session->client_reference_id,$session->payment_intent);
         }
 
         http_response_code(200);
@@ -133,7 +137,7 @@ class Pay extends Base_Controller
      * @param string $invoice_id the id of the invoice
      * @return string the invoice number
      */
-    function _set_paid_invoice($invoice_id)
+    function _set_paid_invoice($invoice_id,$payment_note)
     {
         // Set invoice to paid
         $this->load->database();
@@ -150,6 +154,7 @@ class Pay extends Base_Controller
         ];
 
         $this->mdl_payments->save(null, $db_array);
+        $this->_record_transaction($invoice_id,'Payment successful!','Stripe',true,false);
     }
 
     function _record_transaction($invoice_id,$message,$merchant_reference,$payment_success=false,$canceled=false)
