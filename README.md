@@ -1,3 +1,5 @@
+> :warning: InvoicePlane v.1.6.0 has fixed the broken Stripe integration and therefore this repository will be archived. Please download the latest version of [InvoicePlane](https://invoiceplane.com/downloads).
+
 ## Disclaimer
 This stripe module for [InvoicePlane](https://www.invoiceplane.com/) is still in an early version (_alpha_) and it's not ready for production. The module is distributed for free. Use it at your own risk, any liability of the developer is excluded. Do not use this module if it is in contrast with your country's regulation. This module is in no way supported by Stripe.
 
